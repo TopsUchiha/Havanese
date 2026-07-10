@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================= SEO: CORE META ============================= -->
+  <title>Havanese Havens | Havanese Puppy Adoption & Rescue in Atlanta, GA</title>
+  <meta name="description" content="Adopt or rescue a Havanese puppy in Atlanta, GA. Havanese Havens connects loving families with vetted, vaccinated Havanese puppies and rescued dogs in need of a second chance." />
+  <meta name="keywords" content="Havanese puppies, Havanese adoption, Havanese rescue, Atlanta dog adoption, Havanese breeder alternative, dog rescue Atlanta GA" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.havanesehavens.org/" />
+  <meta name="author" content="Havanese Havens" />
+  <meta name="theme-color" content="#ea580c" />
+
+  <!-- ============================= SEO: OPEN GRAPH ============================= -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Havanese Havens | Havanese Puppy Adoption & Rescue in Atlanta, GA" />
+  <meta property="og:description" content="Adopt or rescue a Havanese puppy in Atlanta, GA. Vetted, vaccinated puppies and rescued dogs ready for their forever homes." />
+  <meta property="og:url" content="https://www.havanesehavens.org/" />
+  <meta property="og:site_name" content="Havanese Havens" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1591768575198-88dac53fbd0a?w=1200&q=80&auto=format&fit=crop" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ============================= SEO: TWITTER CARD ============================= -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Havanese Havens | Havanese Puppy Adoption & Rescue in Atlanta, GA" />
+  <meta name="twitter:description" content="Adopt or rescue a Havanese puppy in Atlanta, GA. Vetted, vaccinated puppies and rescued dogs ready for their forever homes." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1591768575198-88dac53fbd0a?w=1200&q=80&auto=format&fit=crop" />
+
+  <!-- ============================= SEO: STRUCTURED DATA (JSON-LD) ============================= -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AnimalShelter",
+    "name": "Havanese Havens",
+    "description": "Havanese puppy adoption and rescue organization based in Atlanta, GA.",
+    "url": "https://www.havanesehavens.org/",
+    "telephone": "+1-404-555-0198",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Peachtree Lane",
+      "addressLocality": "Atlanta",
+      "addressRegion": "GA",
+      "postalCode": "30303",
+      "addressCountry": "US"
+    },
+    "openingHours": "Mo-Sa 09:00-18:00",
+    "email": "hello@havanesehavens.org"
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .font-display { font-family: 'Fraunces', serif; }
+
+    /* ---------------------------------------------------------------------
+       Ambient background: soft blurred gradient blobs behind everything,
+       fixed so they stay put while content scrolls over them.
+    --------------------------------------------------------------------- */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fff7ed 0%, #fffbeb 100%);
+    }
+    .ambient-blob {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(90px);
+      opacity: 0.45;
+    }
+    .blob-1 { width: 480px; height: 480px; top: -120px; left: -100px; background: #fb923c; }
+    .blob-2 { width: 420px; height: 420px; top: 220px; right: -140px; background: #fcd34d; }
+    .blob-3 { width: 380px; height: 380px; bottom: -140px; left: 30%; background: #fda4af; opacity: 0.3; }
+
+    /* ---------------------------------------------------------------------
+       Glass surfaces
+    --------------------------------------------------------------------- */
+    .glass {
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+    }
+    .glass-strong {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .fade-in { animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-backdrop { animation: backdropFade 0.25s ease-out; }
+    @keyframes backdropFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-panel { animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.94) translateY(18px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .puppy-card {
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .puppy-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px -16px rgba(234, 88, 12, 0.25);
+    }
+    .nav-tab { transition: color 0.2s ease, border-color 0.2s ease; }
+    .logo-link { transition: opacity 0.2s ease, transform 0.2s ease; cursor: pointer; }
+    .logo-link:hover { opacity: 0.85; transform: scale(1.03); }
+    .btn-glow {
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+    }
+    .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(234, 88, 12, 0.45); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #d4a373; border-radius: 8px; }
+  </style>
+</head>
+<body class="text-stone-800 min-h-screen flex flex-col">
+
+  <!-- Ambient blurred-gradient background layer -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+    <div class="ambient-blob blob-3"></div>
+  </div>
+
+  <!-- ============================= HEADER / NAV ============================= -->
+  <header class="glass sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+
+        <!-- Logo: clickable, always returns to Home view -->
+        <button
+          type="button"
+          id="logoHomeBtn"
+          class="logo-link flex items-center gap-3 bg-transparent border-0 p-0 text-left focus:outline-none focus:ring-2 focus:ring-orange-400 rounded-lg"
+          aria-label="Go to homepage"
+        >
+          <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xl font-bold shadow-md">🐾</div>
+          <div>
+            <p class="text-xl font-extrabold text-stone-900 leading-none font-display">Havanese Havens</p>
+            <p class="text-xs text-stone-500 leading-none mt-1">Atlanta, GA</p>
+          </div>
+        </button>
+
+        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold">
+          <button data-view="home" class="nav-tab-btn nav-tab text-orange-600 border-b-2 border-orange-600 pb-1">Home</button>
+          <button data-view="adoption" class="nav-tab-btn nav-tab text-stone-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Adoption</button>
+          <button data-view="rescue" class="nav-tab-btn nav-tab text-stone-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Rescue</button>
+          <button data-view="donations" class="nav-tab-btn nav-tab text-stone-600 hover:text-orange-600 border-b-2 border-transparent pb-1">Donations</button>
+        </nav>
+        <button id="mobileMenuBtn" class="md:hidden text-stone-700 focus:outline-none" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+      <div id="mobileMenu" class="hidden md:hidden pb-4 flex flex-col gap-3 text-sm font-semibold">
+        <button data-view="home" class="nav-tab-btn text-left text-stone-700 hover:text-orange-600">Home</button>
+        <button data-view="adoption" class="nav-tab-btn text-left text-stone-700 hover:text-orange-600">Adoption</button>
+        <button data-view="rescue" class="nav-tab-btn text-left text-stone-700 hover:text-orange-600">Rescue</button>
+        <button data-view="donations" class="nav-tab-btn text-left text-stone-700 hover:text-orange-600">Donations</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+
+    <!-- ============================= HOME VIEW ============================= -->
+    <section id="view-home" class="view-section">
+      <div class="relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center fade-in">
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight">
+            Find Your Forever <span class="text-orange-600">Havanese</span> Friend
+          </h1>
+          <p class="mt-6 text-lg text-stone-600 max-w-2xl mx-auto">
+            Based right here in Atlanta, GA, we connect loving families with gentle, joyful Havanese puppies —
+            whether through adoption of our premium litters or the rescue of dogs who deserve a second chance.
+          </p>
+          <div class="mt-10 flex flex-wrap justify-center gap-4">
+            <button data-view="adoption" class="nav-tab-btn btn-glow bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg">
+              View Adoptable Puppies
+            </button>
+            <button data-view="rescue" class="nav-tab-btn btn-glow glass-strong hover:bg-white text-orange-600 font-semibold px-8 py-3 rounded-full shadow-lg">
+              Meet Our Rescues
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="grid sm:grid-cols-3 gap-8 text-center">
+          <div class="glass rounded-3xl p-8 shadow-sm fade-in">
+            <div class="text-4xl mb-3">🏡</div>
+            <h3 class="font-bold text-lg mb-2">No Hoarding, Ever</h3>
+            <p class="text-stone-600 text-sm">Every puppy stays visible to every family. There's no shopping cart lock — just fair, transparent applications.</p>
+          </div>
+          <div class="glass rounded-3xl p-8 shadow-sm fade-in">
+            <div class="text-4xl mb-3">💛</div>
+            <h3 class="font-bold text-lg mb-2">Rescue With Heart</h3>
+            <p class="text-stone-600 text-sm">Our rescue Havanese come from shelters across the Atlanta area, vetted and ready for a loving home.</p>
+          </div>
+          <div class="glass rounded-3xl p-8 shadow-sm fade-in">
+            <div class="text-4xl mb-3">🤝</div>
+            <h3 class="font-bold text-lg mb-2">Community Funded</h3>
+            <p class="text-stone-600 text-sm">Donations directly support vet care, food, and shelter for dogs waiting for their forever families.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= ADOPTION VIEW ============================= -->
+    <section id="view-adoption" class="view-section hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-12 fade-in">
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900">Available for Adoption</h2>
+          <p class="mt-3 text-stone-600 max-w-2xl mx-auto">Premium Havanese puppies, raised with love and ready to join your family.</p>
+        </div>
+        <div id="adoptionGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- ============================= RESCUE VIEW ============================= -->
+    <section id="view-rescue" class="view-section hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-12 fade-in">
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900">Havanese Rescues</h2>
+          <p class="mt-3 text-stone-600 max-w-2xl mx-auto">These sweet dogs have overcome hard beginnings and are ready for a second chance.</p>
+        </div>
+        <div id="rescueGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- ============================= DONATIONS VIEW ============================= -->
+    <section id="view-donations" class="view-section hidden">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-12 fade-in">
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-stone-900">Support Our Mission</h2>
+          <p class="mt-3 text-stone-600 max-w-2xl mx-auto">Your donation directly funds vet visits, food, grooming, and shelter for Havanese dogs awaiting adoption. Submit a request below and our team will follow up with instructions for your chosen payment method.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-6 mb-12">
+          <div class="glass rounded-3xl p-6 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-orange-600">$25</p>
+            <p class="text-sm text-stone-500 mt-1">Covers a week of food</p>
+          </div>
+          <div class="glass rounded-3xl p-6 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-orange-600">$75</p>
+            <p class="text-sm text-stone-500 mt-1">Covers a vet checkup</p>
+          </div>
+          <div class="glass rounded-3xl p-6 shadow-sm text-center">
+            <p class="text-3xl font-extrabold text-orange-600">$150</p>
+            <p class="text-sm text-stone-500 mt-1">Covers vaccinations & grooming</p>
+          </div>
+        </div>
+
+        <div class="glass-strong rounded-3xl p-8 shadow-sm fade-in">
+          <h3 class="font-bold text-lg mb-1">Donation Request Form</h3>
+          <p class="text-sm text-stone-500 mb-6">Fill this out and our team will reach out with payment instructions for your selected method.</p>
+
+          <form id="donationForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-1">Full Name</label>
+              <input type="text" id="donationName" required maxlength="150" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="Jane Smith" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-1">Email</label>
+              <input type="email" id="donationEmail" required maxlength="150" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="jane@example.com" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-1">Amount (USD)</label>
+              <input type="number" id="donationAmount" required min="1" step="1" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="50" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-stone-700 mb-1">Preferred Payment Method</label>
+              <select id="donationPaymentMethod" required class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value="" disabled selected>Select a payment method...</option>
+                <option value="PayPal (Family and Friends)">PayPal (Family and Friends)</option>
+                <option value="Chime">Chime</option>
+                <option value="Apple Pay">Apple Pay</option>
+                <option value="Gift Card">Gift Card</option>
+                <option value="Cash App">Cash App</option>
+                <option value="Venmo">Venmo</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div id="donationFormMessage" class="hidden text-sm rounded-lg px-4 py-2"></div>
+            <button type="submit" class="w-full btn-glow bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-full shadow">Submit Donation Request</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= FOOTER ============================= -->
+  <!-- NOTE: no link to /admin here on purpose. The dashboard is reachable by
+       navigating directly to /admin - it's simply not advertised in the
+       public-facing UI. Real protection is the JWT-cookie login wall, not
+       this omission, so bookmark /admin directly for your own access. -->
+  <footer class="glass-strong text-stone-700 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid sm:grid-cols-3 gap-8">
+      <div>
+        <p class="text-stone-900 font-extrabold text-lg mb-2 font-display">Havanese Havens</p>
+        <p class="text-sm text-stone-500">Dedicated to Havanese adoption and rescue in Atlanta, GA.</p>
+      </div>
+      <div>
+        <p class="text-stone-900 font-semibold mb-2">Contact</p>
+        <!-- EDIT CONTACT INFO HERE -->
+        <p class="text-sm text-stone-500">123 Peachtree Lane, Atlanta, GA 30303</p>
+        <p class="text-sm text-stone-500">(404) 555-0198</p>
+        <p class="text-sm text-stone-500">hello@havanesehavens.org</p>
+      </div>
+      <div>
+        <p class="text-stone-900 font-semibold mb-2">Hours</p>
+        <p class="text-sm text-stone-500">Mon - Sat: 9am - 6pm</p>
+        <p class="text-sm text-stone-500">Sunday: By appointment</p>
+      </div>
+    </div>
+    <div class="border-t border-stone-300/50 py-4 text-center text-xs text-stone-500">
+      © 2026 Havanese Havens. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- ============================= APPLY TO ADOPT MODAL ============================= -->
+  <div id="applyModalBackdrop" class="hidden fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-backdrop">
+    <div class="modal-panel glass-strong rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-white/40 flex items-center justify-between sticky top-0 glass-strong rounded-t-3xl">
+        <h3 class="text-xl font-bold text-stone-900">Apply to Adopt <span id="modalPuppyName" class="text-orange-600"></span></h3>
+        <button onclick="closeApplyModal()" class="text-stone-400 hover:text-stone-600 text-2xl leading-none">&times;</button>
+      </div>
+      <form id="applyForm" class="p-6 space-y-4">
+        <input type="hidden" id="applyPuppyId" />
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">Full Name</label>
+          <input type="text" id="applyFullName" required maxlength="150" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="Jane Smith" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">Email</label>
+          <input type="email" id="applyEmail" required maxlength="150" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="jane@example.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">Phone</label>
+          <input type="tel" id="applyPhone" required maxlength="30" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="(404) 555-0123" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">Household Details</label>
+          <textarea id="applyHousehold" required maxlength="2000" rows="3" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="Home type, yard size, other pets, children, etc."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">Prior Dog Experience</label>
+          <textarea id="applyExperience" required maxlength="2000" rows="3" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400" placeholder="Tell us about any dogs you've owned or cared for."></textarea>
+        </div>
+        <div id="applyFormMessage" class="hidden text-sm rounded-lg px-4 py-2"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeApplyModal()" class="flex-1 border border-stone-300 text-stone-700 font-semibold py-3 rounded-full hover:bg-white/60 transition">Cancel</button>
+          <button type="submit" class="flex-1 btn-glow bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-full shadow">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------------------
+    // Navigation: toggle between Home / Adoption / Rescue / Donations views
+    // -------------------------------------------------------------------------
+    const navButtons = document.querySelectorAll('.nav-tab-btn');
+    const views = document.querySelectorAll('.view-section');
+
+    function showView(viewName) {
+      views.forEach((v) => v.classList.add('hidden'));
+      const target = document.getElementById('view-' + viewName);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('fade-in');
+      }
+
+      document.querySelectorAll('[data-view]').forEach((btn) => {
+        if (btn.tagName === 'BUTTON' && btn.closest('nav')) {
+          if (btn.dataset.view === viewName) {
+            btn.classList.add('text-orange-600', 'border-orange-600');
+            btn.classList.remove('text-stone-600', 'border-transparent');
+          } else {
+            btn.classList.remove('text-orange-600', 'border-orange-600');
+            btn.classList.add('text-stone-600', 'border-transparent');
+          }
+        }
+      });
+
+      document.getElementById('mobileMenu').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener('click', () => showView(btn.dataset.view));
+    });
+
+    document.getElementById('logoHomeBtn').addEventListener('click', () => showView('home'));
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+
+    // -------------------------------------------------------------------------
+    // Fetch puppies and render into Adoption / Rescue grids
+    // -------------------------------------------------------------------------
+    let allPuppies = [];
+
+    function puppyCard(p) {
+      return `
+        <div class="puppy-card glass rounded-3xl overflow-hidden shadow-sm fade-in flex flex-col">
+          <img src="${p.image_url}" alt="${p.name} - Havanese ${p.category === 'Adoption' ? 'puppy available for adoption' : 'rescue dog'} in Atlanta, GA" loading="lazy" class="w-full h-64 object-cover" onerror="this.src='https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?w=1200&q=80&auto=format&fit=crop'" />
+          <div class="p-6 flex flex-col flex-1">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-xl font-bold text-stone-900">${p.name}</h3>
+              <span class="text-xs font-semibold px-3 py-1 rounded-full ${p.category === 'Adoption' ? 'bg-orange-100 text-orange-700' : 'bg-emerald-100 text-emerald-700'}">${p.category}</span>
+            </div>
+            <p class="text-sm text-stone-500 mb-3">${p.age}</p>
+            <p class="text-sm text-stone-600 mb-5 line-clamp-4 flex-1">${p.description}</p>
+            <button onclick="openApplyModal(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="w-full btn-glow bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 rounded-full shadow">Apply to Adopt</button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadPuppies() {
+      try {
+        const res = await fetch('/api/puppies');
+        const data = await res.json();
+        allPuppies = data.puppies || [];
+
+        const adoptionGrid = document.getElementById('adoptionGrid');
+        const rescueGrid = document.getElementById('rescueGrid');
+
+        const adoptionPuppies = allPuppies.filter((p) => p.category === 'Adoption');
+        const rescuePuppies = allPuppies.filter((p) => p.category === 'Rescue');
+
+        adoptionGrid.innerHTML = adoptionPuppies.length
+          ? adoptionPuppies.map(puppyCard).join('')
+          : '<p class="text-stone-500 col-span-full text-center">No puppies currently available for adoption. Please check back soon!</p>';
+
+        rescueGrid.innerHTML = rescuePuppies.length
+          ? rescuePuppies.map(puppyCard).join('')
+          : '<p class="text-stone-500 col-span-full text-center">No rescue dogs currently listed. Please check back soon!</p>';
+      } catch (err) {
+        console.error('Failed to load puppies:', err);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Apply to Adopt modal
+    // -------------------------------------------------------------------------
+    function openApplyModal(puppyId, puppyName) {
+      document.getElementById('applyPuppyId').value = puppyId;
+      document.getElementById('modalPuppyName').textContent = puppyName;
+      document.getElementById('applyFormMessage').classList.add('hidden');
+      document.getElementById('applyForm').reset();
+      document.getElementById('applyPuppyId').value = puppyId;
+      document.getElementById('applyModalBackdrop').classList.remove('hidden');
+    }
+
+    function closeApplyModal() {
+      document.getElementById('applyModalBackdrop').classList.add('hidden');
+    }
+
+    document.getElementById('applyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        puppy_id: document.getElementById('applyPuppyId').value,
+        full_name: document.getElementById('applyFullName').value,
+        email: document.getElementById('applyEmail').value,
+        phone: document.getElementById('applyPhone').value,
+        household_details: document.getElementById('applyHousehold').value,
+        prior_experience: document.getElementById('applyExperience').value
+      };
+
+      const messageBox = document.getElementById('applyFormMessage');
+
+      try {
+        const res = await fetch('/api/applications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        messageBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
+
+        if (res.ok) {
+          messageBox.classList.add('bg-green-50', 'text-green-700');
+          messageBox.textContent = data.message || 'Application submitted successfully!';
+          setTimeout(() => closeApplyModal(), 1800);
+        } else {
+          messageBox.classList.add('bg-red-50', 'text-red-700');
+          messageBox.textContent = data.error || 'Something went wrong. Please try again.';
+        }
+      } catch (err) {
+        messageBox.classList.remove('hidden');
+        messageBox.classList.add('bg-red-50', 'text-red-700');
+        messageBox.textContent = 'Network error. Please try again.';
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // Donation request form -> POST /api/donations
+    // -------------------------------------------------------------------------
+    document.getElementById('donationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        donor_name: document.getElementById('donationName').value,
+        donor_email: document.getElementById('donationEmail').value,
+        amount: document.getElementById('donationAmount').value,
+        payment_method: document.getElementById('donationPaymentMethod').value
+      };
+
+      const messageBox = document.getElementById('donationFormMessage');
+
+      try {
+        const res = await fetch('/api/donations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        messageBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
+
+        if (res.ok) {
+          messageBox.classList.add('bg-green-50', 'text-green-700');
+          messageBox.textContent = data.message || 'Thank you! Your donation request has been submitted — our team will follow up with payment instructions.';
+          document.getElementById('donationForm').reset();
+        } else {
+          messageBox.classList.add('bg-red-50', 'text-red-700');
+          messageBox.textContent = data.error || 'Something went wrong. Please try again.';
+        }
+      } catch (err) {
+        messageBox.classList.remove('hidden');
+        messageBox.classList.add('bg-red-50', 'text-red-700');
+        messageBox.textContent = 'Network error. Please try again.';
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // Init
+    // -------------------------------------------------------------------------
+    loadPuppies();
+    showView('home');
+  </script>
+</body>
+</html>

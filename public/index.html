@@ -315,7 +315,16 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
     const navButtons = document.querySelectorAll('.nav-tab-btn');
     const views = document.querySelectorAll('.view-section');
 
-    function showView(viewName) {
+    const VALID_VIEWS = ['home', 'adoption', 'rescue', 'donations'];
+
+    function getViewFromHash() {
+      const hash = window.location.hash.replace('#', '');
+      return VALID_VIEWS.includes(hash) ? hash : null;
+    }
+
+    function showView(viewName, options = {}) {
+      const { updateHistory = true, replace = false } = options;
+
       views.forEach((v) => v.classList.add('hidden'));
       const target = document.getElementById('view-' + viewName);
       if (target) {
@@ -335,7 +344,21 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
       });
       document.getElementById('mobileMenu').classList.add('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (updateHistory) {
+        const hash = '#' + viewName;
+        if (replace) {
+          history.replaceState({ view: viewName }, '', hash);
+        } else if (window.location.hash !== hash) {
+          history.pushState({ view: viewName }, '', hash);
+        }
+      }
     }
+
+    window.addEventListener('popstate', (event) => {
+      const viewName = (event.state && event.state.view) || getViewFromHash() || 'home';
+      showView(viewName, { updateHistory: false });
+    });
 
     navButtons.forEach((btn) => { btn.addEventListener('click', () => showView(btn.dataset.view)); });
     document.getElementById('logoHomeBtn').addEventListener('click', () => showView('home'));
@@ -468,7 +491,7 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
     });
 
     loadPuppies();
-    showView('home');
+    showView(getViewFromHash() || 'home', { replace: true });
   </script>
 </body>
 </html>

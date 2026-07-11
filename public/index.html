@@ -428,7 +428,7 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
         messageBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
         if (res.ok) {
           messageBox.classList.add('bg-green-50', 'text-green-700');
-          messageBox.textContent = data.message || 'Thank you! Your donation request has been submitted. Our team will follow up with payment instructions.';
+          messageBox.textContent = data.message || 'Thank you! Your donation request has been submitted. Our team will follow up with payment instructions via email.';
           document.getElementById('donationForm').reset();
         } else {
           messageBox.classList.add('bg-red-50', 'text-red-700');

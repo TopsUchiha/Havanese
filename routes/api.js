@@ -33,21 +33,9 @@ const VALID_PAYMENT_METHODS = [
 
 // -----------------------------------------------------------------------------
 // UPLOAD SYSTEM: multer configuration for puppy photo uploads
-//
-// Files are written to /public/uploads/, which Express already serves as
-// static content (see server.js), so a saved file at
-//   /public/uploads/1735689600000-golden_pup.jpg
-// is reachable in the browser at
-//   /uploads/1735689600000-golden_pup.jpg
-// and that relative path string is exactly what gets stored in the
-// puppies.image_url database column. It renders identically on localhost and
-// on a live host, since it's just a same-origin relative URL - no hardcoded
-// domain, no absolute filesystem path ever touches the browser or the DB.
 // -----------------------------------------------------------------------------
 const UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads');
 
-// Ensure the upload directory exists before multer ever tries to write to it
-// (matters on a fresh clone/deploy where the folder might not exist yet).
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
@@ -57,9 +45,6 @@ const storage = multer.diskStorage({
     cb(null, UPLOAD_DIR);
   },
   filename: (req, file, cb) => {
-    // Strip anything that isn't alphanumeric/dot/dash/underscore from the
-    // original filename, then prefix with a timestamp so two admins
-    // uploading "puppy.jpg" at different times never collide.
     const sanitizedOriginalName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
     cb(null, Date.now() + '-' + sanitizedOriginalName);
   }
@@ -82,9 +67,6 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB per file
 });
 
-// Deletes a previously-uploaded file from disk, but only if it's one of ours
-// (a relative /uploads/... path). Seed puppies use external Unsplash URLs and
-// must never be touched by this - only files we actually wrote get deleted.
 function deleteUploadedFileIfLocal(imageUrl) {
   if (typeof imageUrl === 'string' && imageUrl.startsWith('/uploads/')) {
     const filePath = path.join(__dirname, '..', 'public', imageUrl);
@@ -100,7 +82,7 @@ function deleteUploadedFileIfLocal(imageUrl) {
 // Rate limiters for sensitive endpoints
 // -----------------------------------------------------------------------------
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
@@ -108,7 +90,7 @@ const loginLimiter = rateLimit({
 });
 
 const applicationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
@@ -116,7 +98,7 @@ const applicationLimiter = rateLimit({
 });
 
 const donationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
@@ -124,7 +106,7 @@ const donationLimiter = rateLimit({
 });
 
 // -----------------------------------------------------------------------------
-// Helper: run a validation chain and bail out with 400 on failure
+// Helpers
 // -----------------------------------------------------------------------------
 function handleValidation(req, res, next) {
   const errors = validationResult(req);
@@ -134,9 +116,6 @@ function handleValidation(req, res, next) {
   next();
 }
 
-// Same as handleValidation, but also deletes an already-written upload if
-// validation fails afterward - prevents orphaned files piling up in
-// /public/uploads/ every time an admin submits a form with a typo.
 function handleValidationWithFileCleanup(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -148,8 +127,6 @@ function handleValidationWithFileCleanup(req, res, next) {
   next();
 }
 
-// Converts multer errors (file too large, bad file type, etc.) into clean
-// JSON responses instead of letting them fall through as raw 500s.
 function handleUploadErrors(err, req, res, next) {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
@@ -167,7 +144,6 @@ function handleUploadErrors(err, req, res, next) {
    PUBLIC ROUTES
 ============================================================================= */
 
-// GET /api/puppies -> list all puppies, optional ?category=Adoption|Rescue filter
 router.get('/puppies', (req, res) => {
   const { category } = req.query;
 
@@ -186,7 +162,6 @@ router.get('/puppies', (req, res) => {
   });
 });
 
-// GET /api/puppies/:id -> single puppy detail
 router.get(
   '/puppies/:id',
   [param('id').isInt().withMessage('Puppy ID must be an integer.')],
@@ -200,7 +175,6 @@ router.get(
   }
 );
 
-// POST /api/applications -> submit an adoption application for a specific puppy
 router.post(
   '/applications',
   applicationLimiter,
@@ -253,7 +227,6 @@ router.post(
   }
 );
 
-// POST /api/donations -> submit a donation request (name, email, amount, payment method)
 router.post(
   '/donations',
   donationLimiter,
@@ -290,7 +263,6 @@ router.post(
    ADMIN AUTH ROUTES
 ============================================================================= */
 
-// POST /api/admin/login -> verify credentials, issue HTTP-Only JWT cookie
 router.post(
   '/admin/login',
   loginLimiter,
@@ -327,7 +299,6 @@ router.post(
   }
 );
 
-// POST /api/admin/logout -> clear the auth cookie
 router.post('/admin/logout', (req, res) => {
   res.clearCookie('admin_token', {
     httpOnly: true,
@@ -337,7 +308,6 @@ router.post('/admin/logout', (req, res) => {
   res.json({ message: 'Logged out successfully.' });
 });
 
-// GET /api/admin/me -> check current session validity
 router.get('/admin/me', requireAdminAuth, (req, res) => {
   res.json({ username: req.admin.username });
 });
@@ -346,7 +316,6 @@ router.get('/admin/me', requireAdminAuth, (req, res) => {
    PROTECTED ADMIN ROUTES (require valid JWT cookie)
 ============================================================================= */
 
-// GET /api/admin/metrics -> dashboard summary metrics
 router.get('/admin/metrics', requireAdminAuth, (req, res) => {
   db.get('SELECT COUNT(*) AS totalPuppies FROM puppies', (err, puppyRow) => {
     if (err) return res.status(500).json({ error: 'Failed to fetch metrics.' });
@@ -378,7 +347,6 @@ router.get('/admin/metrics', requireAdminAuth, (req, res) => {
   });
 });
 
-// GET /api/admin/puppies -> full puppy list for the admin table
 router.get('/admin/puppies', requireAdminAuth, (req, res) => {
   db.all('SELECT * FROM puppies ORDER BY created_at DESC', (err, rows) => {
     if (err) return res.status(500).json({ error: 'Failed to fetch puppies.' });
@@ -386,7 +354,6 @@ router.get('/admin/puppies', requireAdminAuth, (req, res) => {
   });
 });
 
-// POST /api/admin/puppies -> create a new puppy listing (multipart/form-data with an image file)
 router.post(
   '/admin/puppies',
   requireAdminAuth,
@@ -423,7 +390,6 @@ router.post(
       [name, age, category, description, image_url, price],
       function (err) {
         if (err) {
-          // DB insert failed after the file was already written - clean it up
           fs.unlink(req.file.path, () => {});
           return res.status(500).json({ error: 'Failed to create puppy listing.' });
         }
@@ -433,8 +399,6 @@ router.post(
   }
 );
 
-// PUT /api/admin/puppies/:id -> edit an existing puppy listing. The photo is
-// optional on edit: if no new file is uploaded, the existing image is kept.
 router.put(
   '/admin/puppies/:id',
   requireAdminAuth,
@@ -472,7 +436,6 @@ router.put(
         return res.status(404).json({ error: 'Puppy not found.' });
       }
 
-      // Keep the existing photo unless the admin uploaded a replacement
       const image_url = req.file ? '/uploads/' + req.file.filename : existingPuppy.image_url;
 
       db.run(
@@ -484,7 +447,6 @@ router.put(
             return res.status(500).json({ error: 'Failed to update puppy listing.' });
           }
 
-          // Only delete the old file once the new one is safely saved in the DB
           if (req.file) {
             deleteUploadedFileIfLocal(existingPuppy.image_url);
           }
@@ -496,7 +458,6 @@ router.put(
   }
 );
 
-// DELETE /api/admin/puppies/:id -> remove a puppy listing and its uploaded photo
 router.delete(
   '/admin/puppies/:id',
   requireAdminAuth,
@@ -518,7 +479,7 @@ router.delete(
   }
 );
 
-// GET /api/admin/applications -> full application list joined with puppy info
+// GET /api/admin/applications -> Added applications.delivery_address selection
 router.get('/admin/applications', requireAdminAuth, (req, res) => {
   const sql = `
     SELECT
@@ -526,6 +487,7 @@ router.get('/admin/applications', requireAdminAuth, (req, res) => {
       applications.full_name AS full_name,
       applications.email AS email,
       applications.phone AS phone,
+      applications.delivery_address AS delivery_address,
       applications.household_details AS household_details,
       applications.prior_experience AS prior_experience,
       applications.status AS status,
@@ -544,9 +506,8 @@ router.get('/admin/applications', requireAdminAuth, (req, res) => {
   });
 });
 
-// PUT /api/admin/applications/:id/status -> update an application's review status
 router.put(
-  '/admin/applications/:id/status',
+  '/api/admin/applications/:id/status',
   requireAdminAuth,
   [
     param('id').isInt().withMessage('Application ID must be an integer.'),
@@ -569,7 +530,6 @@ router.put(
   }
 );
 
-// GET /api/admin/donations -> full donation request list
 router.get('/admin/donations', requireAdminAuth, (req, res) => {
   db.all('SELECT * FROM donations ORDER BY created_at DESC', (err, rows) => {
     if (err) return res.status(500).json({ error: 'Failed to fetch donations.' });
@@ -577,7 +537,6 @@ router.get('/admin/donations', requireAdminAuth, (req, res) => {
   });
 });
 
-// PUT /api/admin/donations/:id/status -> update a donation request's status
 router.put(
   '/admin/donations/:id/status',
   requireAdminAuth,

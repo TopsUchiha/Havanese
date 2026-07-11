@@ -1,0 +1,98 @@
+From 8499deb68f47f2c8639a180ec281e82ca6b17821 Mon Sep 17 00:00:00 2001
+From: TopsUchiha <topsdesilva@gmail.com>
+Date: Sat, 11 Jul 2026 17:15:59 +0000
+Subject: [PATCH] fix: add missing delivery_address column to applications
+ table schema and migration
+
+---
+ config/db.js | 37 ++++++++++++++++++++++++++++++++-----
+ db.js        | 14 --------------
+ 2 files changed, 32 insertions(+), 19 deletions(-)
+ delete mode 100644 db.js
+
+diff --git a/config/db.js b/config/db.js
+index 39c0e1e..94beae5 100644
+--- a/config/db.js
++++ b/config/db.js
+@@ -185,6 +185,7 @@ function createTables(callback) {
+         full_name TEXT NOT NULL,
+         email TEXT NOT NULL,
+         phone TEXT NOT NULL,
++        delivery_address TEXT NOT NULL DEFAULT '',
+         household_details TEXT NOT NULL,
+         prior_experience TEXT NOT NULL,
+         status TEXT NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending', 'Reviewed', 'Approved', 'Denied')),
+@@ -247,6 +248,28 @@ function migratePriceColumn(callback) {
+   });
+ }
+ 
++// -----------------------------------------------------------------------------
++// Migration: add the `delivery_address` column to an existing `applications`
++// table if it was created before this column existed. Same reasoning as
++// migratePriceColumn above — required for the live havanese.db already
++// deployed on Render, since CREATE TABLE IF NOT EXISTS won't alter a table
++// that's already there.
++// -----------------------------------------------------------------------------
++function migrateDeliveryAddressColumn(callback) {
++  db.all('PRAGMA table_info(applications)', (err, columns) => {
++    if (err) return callback(err);
++
++    const hasDeliveryAddressColumn = columns.some((col) => col.name === 'delivery_address');
++    if (hasDeliveryAddressColumn) return callback(null);
++
++    db.run("ALTER TABLE applications ADD COLUMN delivery_address TEXT NOT NULL DEFAULT ''", (alterErr) => {
++      if (alterErr) return callback(alterErr);
++      console.log('Migrated: added delivery_address column to existing applications table.');
++      callback(null);
++    });
++  });
++}
++
+ // -----------------------------------------------------------------------------
+ // Seed admin user if the admins table is empty
+ // -----------------------------------------------------------------------------
+@@ -326,12 +349,16 @@ function initializeDatabase() {
+       migratePriceColumn((migrateErr) => {
+         if (migrateErr) return reject(migrateErr);
+ 
+-        seedAdmin((adminErr) => {
+-          if (adminErr) return reject(adminErr);
++        migrateDeliveryAddressColumn((migrateAddrErr) => {
++          if (migrateAddrErr) return reject(migrateAddrErr);
++
++          seedAdmin((adminErr) => {
++            if (adminErr) return reject(adminErr);
+ 
+-          seedPuppies((puppyErr) => {
+-            if (puppyErr) return reject(puppyErr);
+-            resolve();
++            seedPuppies((puppyErr) => {
++              if (puppyErr) return reject(puppyErr);
++              resolve();
++            });
+           });
+         });
+       });
+diff --git a/db.js b/db.js
+deleted file mode 100644
+index b46a08c..0000000
+--- a/db.js
++++ /dev/null
+@@ -1,14 +0,0 @@
+-
+-// Safe Runtime Fix: Adds the delivery_address column only if it doesn't exist
+-if (db && typeof db.serialize === 'function') {
+-  db.serialize(() => {
+-    db.all("PRAGMA table_info(applications)", (err, rows) => {
+-      if (!err && rows) {
+-        const hasAddressColumn = rows.some(row => row.name === 'delivery_address');
+-        if (!hasAddressColumn) {
+-          db.run("ALTER TABLE applications ADD COLUMN delivery_address TEXT;");
+-        }
+-      }
+-    });
+-  });
+-}
+-- 
+2.43.0
+

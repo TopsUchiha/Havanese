@@ -1,0 +1,114 @@
+From 8018df4c1f4c80d08312ce4c1075da2fcd7c695f Mon Sep 17 00:00:00 2001
+From: TopsUchiha <topsdesilva@gmail.com>
+Date: Sat, 11 Jul 2026 17:34:04 +0000
+Subject: [PATCH] fix: render donation requests correctly in admin panel; fix
+ double /api prefix on application status route
+
+---
+ public/admin.html | 61 +++++++++++++++++++++++++++++++++++++++++++----
+ routes/api.js     |  2 +-
+ 2 files changed, 58 insertions(+), 5 deletions(-)
+
+diff --git a/public/admin.html b/public/admin.html
+index 787d518..b145d09 100644
+--- a/public/admin.html
++++ b/public/admin.html
+@@ -317,6 +317,7 @@
+ 
+     // Cache matrix references
+     let currentApplicationsCache = [];
++    let currentDonationsCache = [];
+ 
+     async function checkSession() {
+       try {
+@@ -651,18 +652,70 @@
+       }
+     }
+ 
+-    // Load Donations function to prevent script crash
+     async function loadDonations() {
+       try {
+         const res = await fetch('/api/admin/donations', { credentials: 'include' });
+         if (!res.ok) return;
+         const data = await res.json();
++        currentDonationsCache = data.donations || [];
++
+         const tbody = document.getElementById('donationsTableBody');
+-        tbody.innerHTML = (data.donations || []).length
+-          ? data.donations.map((d) => `<tr><td class="px-6 py-3">${d.name}</td></tr>`).join('')
++        tbody.innerHTML = currentDonationsCache.length
++          ? currentDonationsCache.map((d) => `
++            <tr>
++              <td class="px-6 py-3">
++                <p class="font-semibold text-stone-900">${d.donor_name}</p>
++                <p class="text-xs text-stone-500">${d.donor_email}</p>
++              </td>
++              <td class="px-6 py-3 text-stone-600">$${Number(d.amount).toFixed(2)}</td>
++              <td class="px-6 py-3 text-stone-600">${d.payment_method}</td>
++              <td class="px-6 py-3">
++                <select onchange="updateDonationStatus(${d.id}, this.value)" class="text-xs font-semibold px-2 py-1 rounded-full border-0 ${statusBadgeClasses(d.status)}">
++                  <option value="Pending" ${d.status === 'Pending' ? 'selected' : ''}>Pending</option>
++                  <option value="Contacted" ${d.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
++                  <option value="Completed" ${d.status === 'Completed' ? 'selected' : ''}>Completed</option>
++                </select>
++              </td>
++              <td class="px-6 py-3">
++                <a href="${buildDonationMailtoLink(d)}" class="inline-block bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold px-4 py-2 rounded-full shadow transition">Send Instructions</a>
++              </td>
++            </tr>
++          `).join('')
+           : '<tr><td colspan="5" class="px-6 py-6 text-center text-stone-500">No donation requests yet.</td></tr>';
+       } catch (err) {
+-        console.error(err);
++        console.error('Failed to load donations:', err);
++      }
++    }
++
++    function buildDonationMailtoLink(d) {
++      const subject = encodeURIComponent('Thank you for your donation to Havanese Haven');
++      const instructions = PAYMENT_INSTRUCTIONS[d.payment_method]
++        || 'Please reply to this email and we will send secure payment instructions directly.';
++      const body = encodeURIComponent(
++        'Hi ' + d.donor_name + ',\n\n' +
++        'Thank you so much for your generous donation of $' + Number(d.amount).toFixed(2) + '!\n\n' +
++        instructions + '\n\n' +
++        'Warm regards,\nHavanese Haven Team\n' + SITE_CONTACT.address
++      );
++      return 'mailto:' + encodeURIComponent(d.donor_email) + '?subject=' + subject + '&body=' + body;
++    }
++
++    async function updateDonationStatus(id, status) {
++      try {
++        const res = await fetch('/api/admin/donations/' + id + '/status', {
++          method: 'PUT',
++          headers: { 'Content-Type': 'application/json' },
++          credentials: 'include',
++          body: JSON.stringify({ status })
++        });
++        if (res.ok) {
++          loadMetrics();
++        } else {
++          const data = await res.json();
++          alert(data.error || 'Failed to update donation status.');
++        }
++      } catch (err) {
++        console.error('Failed to update donation status:', err);
+       }
+     }
+ 
+diff --git a/routes/api.js b/routes/api.js
+index 9e74b05..6504113 100644
+--- a/routes/api.js
++++ b/routes/api.js
+@@ -507,7 +507,7 @@ router.get('/admin/applications', requireAdminAuth, (req, res) => {
+ });
+ 
+ router.put(
+-  '/api/admin/applications/:id/status',
++  '/admin/applications/:id/status',
+   requireAdminAuth,
+   [
+     param('id').isInt().withMessage('Application ID must be an integer.'),
+-- 
+2.43.0
+

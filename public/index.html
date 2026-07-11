@@ -281,7 +281,7 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
         <div>
           <label class="block text-sm font-semibold text-stone-700 mb-1">Phone</label>
           <input type="tel" id="applyPhone" required maxlength="30" class="w-full bg-white/80 border border-stone-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="(123) 456-7890" />
-          <p class="text-xs text-stone-400 mt-1">Used only so we can reach you about your application - never published on our site.</p>
+          <p class="text-xs text-stone-400 mt-1">Used only so we can reach you about your application. Never published on our site.</p>
         </div>
         <div>
           <label class="block text-sm font-semibold text-stone-700 mb-1">Delivery Physical Address</label>
@@ -428,7 +428,7 @@ We have been showing, breeding, and sharing our lives with Havanese for almost 1
         messageBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'bg-green-50', 'text-green-700');
         if (res.ok) {
           messageBox.classList.add('bg-green-50', 'text-green-700');
-          messageBox.textContent = data.message || 'Thank you! Your donation request has been submitted — our team will follow up with payment instructions.';
+          messageBox.textContent = data.message || 'Thank you! Your donation request has been submitted. Our team will follow up with payment instructions.';
           document.getElementById('donationForm').reset();
         } else {
           messageBox.classList.add('bg-red-50', 'text-red-700');

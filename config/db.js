@@ -185,6 +185,7 @@ function createTables(callback) {
         full_name TEXT NOT NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
+        delivery_address TEXT NOT NULL DEFAULT '',
         household_details TEXT NOT NULL,
         prior_experience TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending', 'Reviewed', 'Approved', 'Denied')),
@@ -242,6 +243,28 @@ function migratePriceColumn(callback) {
     db.run('ALTER TABLE puppies ADD COLUMN price REAL NOT NULL DEFAULT 0', (alterErr) => {
       if (alterErr) return callback(alterErr);
       console.log('Migrated: added price column to existing puppies table.');
+      callback(null);
+    });
+  });
+}
+
+// -----------------------------------------------------------------------------
+// Migration: add the `delivery_address` column to an existing `applications`
+// table if it was created before this column existed. Same reasoning as
+// migratePriceColumn above — required for the live havanese.db already
+// deployed on Render, since CREATE TABLE IF NOT EXISTS won't alter a table
+// that's already there.
+// -----------------------------------------------------------------------------
+function migrateDeliveryAddressColumn(callback) {
+  db.all('PRAGMA table_info(applications)', (err, columns) => {
+    if (err) return callback(err);
+
+    const hasDeliveryAddressColumn = columns.some((col) => col.name === 'delivery_address');
+    if (hasDeliveryAddressColumn) return callback(null);
+
+    db.run("ALTER TABLE applications ADD COLUMN delivery_address TEXT NOT NULL DEFAULT ''", (alterErr) => {
+      if (alterErr) return callback(alterErr);
+      console.log('Migrated: added delivery_address column to existing applications table.');
       callback(null);
     });
   });
@@ -326,12 +349,16 @@ function initializeDatabase() {
       migratePriceColumn((migrateErr) => {
         if (migrateErr) return reject(migrateErr);
 
-        seedAdmin((adminErr) => {
-          if (adminErr) return reject(adminErr);
+        migrateDeliveryAddressColumn((migrateAddrErr) => {
+          if (migrateAddrErr) return reject(migrateAddrErr);
 
-          seedPuppies((puppyErr) => {
-            if (puppyErr) return reject(puppyErr);
-            resolve();
+          seedAdmin((adminErr) => {
+            if (adminErr) return reject(adminErr);
+
+            seedPuppies((puppyErr) => {
+              if (puppyErr) return reject(puppyErr);
+              resolve();
+            });
           });
         });
       });

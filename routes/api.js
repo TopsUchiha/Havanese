@@ -209,6 +209,12 @@ router.post(
     body('full_name').trim().notEmpty().escape().isLength({ max: 150 }).withMessage('Full name is required.'),
     body('email').trim().isEmail().normalizeEmail().withMessage('A valid email is required.'),
     body('phone').trim().notEmpty().escape().isLength({ max: 30 }).withMessage('Phone number is required.'),
+    body('delivery_address')
+      .trim()
+      .notEmpty()
+      .escape()
+      .isLength({ max: 300 })
+      .withMessage('Delivery address is required.'),
     body('household_details')
       .trim()
       .notEmpty()
@@ -224,7 +230,7 @@ router.post(
   ],
   handleValidation,
   (req, res) => {
-    const { puppy_id, full_name, email, phone, household_details, prior_experience } = req.body;
+    const { puppy_id, full_name, email, phone, delivery_address, household_details, prior_experience } = req.body;
 
     db.get('SELECT id FROM puppies WHERE id = ?', [puppy_id], (err, puppy) => {
       if (err) return res.status(500).json({ error: 'Failed to verify puppy.' });
@@ -232,9 +238,9 @@ router.post(
 
       db.run(
         `INSERT INTO applications
-          (puppy_id, full_name, email, phone, household_details, prior_experience)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [puppy_id, full_name, email, phone, household_details, prior_experience],
+          (puppy_id, full_name, email, phone, delivery_address, household_details, prior_experience)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [puppy_id, full_name, email, phone, delivery_address, household_details, prior_experience],
         function (insertErr) {
           if (insertErr) return res.status(500).json({ error: 'Failed to submit application.' });
           res.status(201).json({

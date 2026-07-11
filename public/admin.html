@@ -598,7 +598,7 @@
       }
     }
 
-    // Modal view population engine handlers
+   // Modal view population engine handlers
     function openApplicationModal(index) {
       const app = currentApplicationsCache[index];
       if (!app) return;
@@ -608,20 +608,20 @@
       document.getElementById('reviewAppPhone').textContent = app.phone || 'N/A';
       document.getElementById('reviewAppPuppy').textContent = `${app.puppy_name} (${app.puppy_category})`;
       
-      // Fallback matrix evaluation handling for address and description attributes
-      document.getElementById('reviewAppAddress').textContent = app.delivery_address || app.deliveryAddress || app.address || app.home_address || 'No specific physical delivery address submitted.';
+      // Displays the direct database column value captured from the client form submission
+      document.getElementById('reviewAppAddress').textContent = app.delivery_address || 'No specific physical delivery address submitted.';
       
       // Combine Household Details and Prior Dog Experience gracefully inside the description block
-      const household = app.household_details || app.householdDetails || '';
-      const experience = app.prior_experience || app.priorExperience || '';
-      const baseNotes = app.description || app.notes || app.reason || '';
+      const household = app.household_details || '';
+      const experience = app.prior_experience || '';
+      const baseNotes = app.description || app.notes || '';
       
       let finalDescription = '';
       if (household) finalDescription += `HOUSEHOLD DETAILS:\n${household}\n\n`;
       if (experience) finalDescription += `PRIOR DOG EXPERIENCE:\n${experience}\n\n`;
       if (baseNotes) finalDescription += `ADDITIONAL NOTES:\n${baseNotes}`;
       
-      document.getElementById('reviewAppDescription').textContent = finalDescription.trim() || 'No description notes attached to application.';
+      document.getElementById('reviewAppDescription').textContent = finalDescription.trim() || 'No additional details provided.';
 
       // Assign the generated tracking email payload string link
       document.getElementById('reviewAppMailLink').href = buildApplicationMailtoLink(app);

@@ -1,0 +1,4 @@
+node_modules/
+havanese.db
+npm-debug.log
+.env

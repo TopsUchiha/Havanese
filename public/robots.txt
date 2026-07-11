@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /uploads/
+
+# EDIT DOMAIN HERE once you have a live domain
+Sitemap: https://www.havanesehavens.org/sitemap.xml

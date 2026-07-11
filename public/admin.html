@@ -257,6 +257,47 @@
     </div>
   </div>
 
+  <div id="applicationReviewModalBackdrop" class="hidden fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="modal-panel glass-strong rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-stone-200/60 flex items-center justify-between sticky top-0 glass-strong rounded-t-3xl">
+        <h3 class="text-xl font-bold text-stone-900">Review Application</h3>
+        <button onclick="closeApplicationModal()" class="text-stone-400 hover:text-stone-600 text-2xl leading-none">&times;</button>
+      </div>
+      <div class="p-6 space-y-5 text-sm">
+        <div>
+          <span class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">Applicant Identity</span>
+          <p id="reviewAppName" class="font-bold text-stone-900 text-base"></p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <span class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">Email Contact</span>
+            <p id="reviewAppEmail" class="font-medium text-stone-700"></p>
+          </div>
+          <div>
+            <span class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">Phone Contact</span>
+            <p id="reviewAppPhone" class="font-medium text-stone-700"></p>
+          </div>
+        </div>
+        <div>
+          <span class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">Requested Animal Listing</span>
+          <p id="reviewAppPuppy" class="font-medium text-stone-700"></p>
+        </div>
+        <div class="bg-amber-50/60 p-3 rounded-xl border border-amber-200/40">
+          <span class="block text-xs font-semibold text-orange-700 uppercase tracking-wider mb-1">Delivery Physical Address</span>
+          <p id="reviewAppAddress" class="text-stone-800 font-medium font-mono text-xs leading-relaxed bg-white/80 p-2.5 rounded-lg border border-stone-200/40"></p>
+        </div>
+        <div>
+          <span class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Home Environment Details & Notes</span>
+          <p id="reviewAppDescription" class="text-stone-700 bg-stone-50 p-3 rounded-xl border border-stone-200/60 leading-relaxed max-h-40 overflow-y-auto whitespace-pre-wrap"></p>
+        </div>
+        <div class="flex gap-3 pt-3 border-t border-stone-200/60">
+          <button type="button" onclick="closeApplicationModal()" class="flex-1 border border-stone-300 text-stone-700 font-semibold py-3 rounded-full hover:bg-white/60 transition text-center">Close</button>
+          <a id="reviewAppMailLink" href="#" class="flex-1 btn-glow bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-full shadow text-center inline-block">Process & Email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // EDIT CONTACT INFO HERE
     const SITE_CONTACT = {
@@ -274,6 +315,8 @@
       'Bank Transfer': 'Please reply to this email and we will send secure bank transfer (ACH) instructions directly.'
     };
 
+    // Cache matrix references
+    let currentApplicationsCache = [];
 
     async function checkSession() {
       try {
@@ -492,12 +535,14 @@
       }
     }
 
+    // Intercepted Mail Generator: Generates fulfillment template matching requested payload logic
     function buildApplicationMailtoLink(app) {
-      const subject = encodeURIComponent('Havanese Adoption Application Update');
+      const subject = encodeURIComponent(`Application Processed: Complete your adoption for ${app.puppy_name || 'your puppy'}`);
       const body = encodeURIComponent(
-        'Hello ' + app.full_name + ',\n\n' +
-        'Thank you for your application for ' + app.puppy_name + '. We are pleased to inform you that your application has been selected for further review.\n\n' +
-        'If you have any questions in the meantime, feel free to reply directly to this email.\n\n' +
+        'Hi ' + app.full_name + ',\n\n' +
+        `Great news! Your adoption application for ${app.puppy_name || 'your selected Havanese puppy'} has been reviewed and processed successfully.\n\n` +
+        'To finalize your placement and arrange delivery, please complete your secure processing payment using our verified payment link.\n\n' +
+        'Once verification is complete, your puppy will be carefully prepared for transport and safely shipped directly to your verified home address via our authorized tracking shipping company. You will receive a live tracking ID immediately upon dispatch.\n\n' +
         'Warm regards,\nHavanese Haven Team\n' + SITE_CONTACT.address
       );
       return 'mailto:' + encodeURIComponent(app.email) + '?subject=' + subject + '&body=' + body;
@@ -519,11 +564,11 @@
         const res = await fetch('/api/admin/applications', { credentials: 'include' });
         if (!res.ok) return;
         const data = await res.json();
-        const applications = data.applications || [];
+        currentApplicationsCache = data.applications || [];
 
         const tbody = document.getElementById('applicationsTableBody');
-        tbody.innerHTML = applications.length
-          ? applications.map((app) => `
+        tbody.innerHTML = currentApplicationsCache.length
+          ? currentApplicationsCache.map((app, idx) => `
             <tr>
               <td class="px-6 py-3">
                 <p class="font-semibold text-stone-900">${app.full_name}</p>
@@ -543,7 +588,7 @@
                 </select>
               </td>
               <td class="px-6 py-3">
-                <a href="${buildApplicationMailtoLink(app)}" class="inline-block bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold px-4 py-2 rounded-full shadow transition">Review &amp; Email Applicant</a>
+                <button onclick="openApplicationModal(${idx})" class="inline-block bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold px-4 py-2 rounded-full shadow transition">Review Application</button>
               </td>
             </tr>
           `).join('')
@@ -551,6 +596,29 @@
       } catch (err) {
         console.error('Failed to load applications:', err);
       }
+    }
+
+    // Modal view population engine handlers
+    function openApplicationModal(index) {
+      const app = currentApplicationsCache[index];
+      if (!app) return;
+
+      document.getElementById('reviewAppName').textContent = app.full_name;
+      document.getElementById('reviewAppEmail').textContent = app.email;
+      document.getElementById('reviewAppPhone').textContent = app.phone || 'N/A';
+      document.getElementById('reviewAppPuppy').textContent = `${app.puppy_name} (${app.puppy_category})`;
+      
+      // Fallback matrix evaluation handling for address and description attributes
+      document.getElementById('reviewAppAddress').textContent = app.address || app.home_address || 'No specific physical delivery address submitted.';
+      document.getElementById('reviewAppDescription').textContent = app.description || app.notes || app.reason || 'No description notes attached to application.';
+
+      // Assign the generated tracking email payload string link
+      document.getElementById('reviewAppMailLink').href = buildApplicationMailtoLink(app);
+      document.getElementById('applicationReviewModalBackdrop').classList.remove('hidden');
+    }
+
+    function closeApplicationModal() {
+      document.getElementById('applicationReviewModalBackdrop').classList.add('hidden');
     }
 
     async function updateApplicationStatus(id, status) {

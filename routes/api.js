@@ -507,7 +507,7 @@ router.get('/admin/applications', requireAdminAuth, (req, res) => {
 });
 
 router.put(
-  '/api/admin/applications/:id/status',
+  '/admin/applications/:id/status',
   requireAdminAuth,
   [
     param('id').isInt().withMessage('Application ID must be an integer.'),

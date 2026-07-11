@@ -551,10 +551,10 @@
     function statusBadgeClasses(status) {
       switch (status) {
         case 'Approved':
-        case 'Completed': return 'bg-emerald-100 text-emerald-700';
+          case 'Completed': return 'bg-emerald-100 text-emerald-700';
         case 'Denied': return 'bg-red-100 text-red-700';
         case 'Reviewed':
-        case 'Contacted': return 'bg-blue-100 text-blue-700';
+          case 'Contacted': return 'bg-blue-100 text-blue-700';
         default: return 'bg-amber-100 text-amber-700';
       }
     }
@@ -609,8 +609,19 @@
       document.getElementById('reviewAppPuppy').textContent = `${app.puppy_name} (${app.puppy_category})`;
       
       // Fallback matrix evaluation handling for address and description attributes
-      document.getElementById('reviewAppAddress').textContent = app.address || app.home_address || 'No specific physical delivery address submitted.';
-      document.getElementById('reviewAppDescription').textContent = app.description || app.notes || app.reason || 'No description notes attached to application.';
+      document.getElementById('reviewAppAddress').textContent = app.delivery_address || app.deliveryAddress || app.address || app.home_address || 'No specific physical delivery address submitted.';
+      
+      // Combine Household Details and Prior Dog Experience gracefully inside the description block
+      const household = app.household_details || app.householdDetails || '';
+      const experience = app.prior_experience || app.priorExperience || '';
+      const baseNotes = app.description || app.notes || app.reason || '';
+      
+      let finalDescription = '';
+      if (household) finalDescription += `HOUSEHOLD DETAILS:\n${household}\n\n`;
+      if (experience) finalDescription += `PRIOR DOG EXPERIENCE:\n${experience}\n\n`;
+      if (baseNotes) finalDescription += `ADDITIONAL NOTES:\n${baseNotes}`;
+      
+      document.getElementById('reviewAppDescription').textContent = finalDescription.trim() || 'No description notes attached to application.';
 
       // Assign the generated tracking email payload string link
       document.getElementById('reviewAppMailLink').href = buildApplicationMailtoLink(app);
@@ -636,79 +647,26 @@
           alert(data.error || 'Failed to update status.');
         }
       } catch (err) {
-        alert('Network error. Please try again.');
+        console.error('Failed to update application status:', err);
       }
     }
 
-    function buildDonationMailtoLink(donation) {
-      const subject = encodeURIComponent('How to Complete Your Donation to Havanese Haven');
-      const instructions = PAYMENT_INSTRUCTIONS[donation.payment_method] || 'Please reply to this email and we will send you payment instructions.';
-      const body = encodeURIComponent(
-        'Hello ' + donation.donor_name + ',\n\n' +
-        'Thank you so much for your generous donation request of $' + donation.amount + ' via ' + donation.payment_method + '!\n\n' +
-        instructions + '\n\n' +
-        'Once received, we will send a confirmation. Thank you again for supporting Havanese Haven.\n\n' +
-        'Warm regards,\nHavanese Haven Team\n' + SITE_CONTACT.address
-      );
-      return 'mailto:' + encodeURIComponent(donation.donor_email) + '?subject=' + subject + '&body=' + body;
-    }
-
+    // Load Donations function to prevent script crash
     async function loadDonations() {
       try {
         const res = await fetch('/api/admin/donations', { credentials: 'include' });
         if (!res.ok) return;
         const data = await res.json();
-        const donations = data.donations || [];
-
         const tbody = document.getElementById('donationsTableBody');
-        tbody.innerHTML = donations.length
-          ? donations.map((d) => `
-            <tr>
-              <td class="px-6 py-3">
-                <p class="font-semibold text-stone-900">${d.donor_name}</p>
-                <p class="text-xs text-stone-400">${d.donor_email}</p>
-                <p class="text-xs text-stone-400">${new Date(d.created_at).toLocaleDateString()}</p>
-              </td>
-              <td class="px-6 py-3 font-semibold text-stone-900">$${Number(d.amount).toFixed(2)}</td>
-              <td class="px-6 py-3 text-stone-600">${d.payment_method}</td>
-              <td class="px-6 py-3">
-                <select onchange="updateDonationStatus(${d.id}, this.value)" class="text-xs font-semibold px-2 py-1 rounded-full border-0 ${statusBadgeClasses(d.status)}">
-                  <option value="Pending" ${d.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                  <option value="Contacted" ${d.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
-                  <option value="Completed" ${d.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                </select>
-              </td>
-              <td class="px-6 py-3">
-                <a href="${buildDonationMailtoLink(d)}" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-full shadow transition">Send Payment Details</a>
-              </td>
-            </tr>
-          `).join('')
-          : '<tr><td colspan="5" class="px-6 py-6 text-center text-stone-500">No donation requests submitted yet.</td></tr>';
+        tbody.innerHTML = (data.donations || []).length
+          ? data.donations.map((d) => `<tr><td class="px-6 py-3">${d.name}</td></tr>`).join('')
+          : '<tr><td colspan="5" class="px-6 py-6 text-center text-stone-500">No donation requests yet.</td></tr>';
       } catch (err) {
-        console.error('Failed to load donations:', err);
+        console.error(err);
       }
     }
 
-    async function updateDonationStatus(id, status) {
-      try {
-        const res = await fetch('/api/admin/donations/' + id + '/status', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ status })
-        });
-        if (res.ok) {
-          loadMetrics();
-        } else {
-          const data = await res.json();
-          alert(data.error || 'Failed to update status.');
-        }
-      } catch (err) {
-        alert('Network error. Please try again.');
-      }
-    }
-
-    checkSession();
+    window.onload = checkSession;
   </script>
 </body>
 </html>
